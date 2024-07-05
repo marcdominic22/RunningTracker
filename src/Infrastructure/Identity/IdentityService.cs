@@ -3,6 +3,8 @@ using RunningTracker.Application.Common.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using RunningTracker.Domain.Constants;
+using System.Reflection;
 
 namespace RunningTracker.Infrastructure.Identity;
 
@@ -29,7 +31,7 @@ public class IdentityService : IIdentityService
         return user?.UserName;
     }
 
-    public async Task<(Result Result, string UserId)> CreateUserAsync(string userName, string password)
+    public async Task<(Result Result, string UserId)> CreateUserAsync(string userName, string password, string roleName)
     {
         var user = new ApplicationUser
         {
@@ -38,6 +40,14 @@ public class IdentityService : IIdentityService
         };
 
         var result = await _userManager.CreateAsync(user, password);
+
+        if (!string.IsNullOrEmpty(roleName) && RoleExists(roleName))
+        {
+            var anyRole = new IdentityRole(roleName);
+
+            if(!string.IsNullOrWhiteSpace(anyRole.Name))
+            await _userManager.AddToRolesAsync(user, new [] { anyRole.Name });
+        }
 
         return (result.ToApplicationResult(), user.Id);
     }
@@ -77,5 +87,13 @@ public class IdentityService : IIdentityService
         var result = await _userManager.DeleteAsync(user);
 
         return result.ToApplicationResult();
+    }
+
+    private static bool RoleExists(string roleName)
+    {
+        var fields = typeof(Roles).GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy);
+        #pragma warning disable CS8602 // Dereference of a possibly null reference.
+        return fields.Any(field => field.IsLiteral && field.GetRawConstantValue().ToString() == roleName);
+        #pragma warning restore CS8602 // Dereference of a possibly null reference.
     }
 }

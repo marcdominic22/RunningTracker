@@ -36,5 +36,14 @@
     <ItemGroup>
         <ProjectReference Include="..\..\src\Web\Web.csproj" />
     </ItemGroup>
+    
+    <ItemGroup>
+      <Folder Include="RunningActivities\" />
+      <Folder Include="RunningActivities\Commands\" />
+      <Folder Include="RunningActivities\Queries\" />
+      <Folder Include="UserProfiles\" />
+      <Folder Include="UserProfiles\Commands\" />
+      <Folder Include="UserProfiles\Queries\" />
+    </ItemGroup>
 
 </Project>
