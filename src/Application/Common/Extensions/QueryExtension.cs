@@ -1,9 +1,15 @@
-﻿namespace RunningTracker.Application.Common.Extensions;
+﻿using Microsoft.EntityFrameworkCore.Query;
+
+namespace RunningTracker.Application.Common.Extensions;
 
 public static class QueryExtension
 {
-    public static IQueryable<T> If<T>(this IQueryable<T> source, bool condition, Func<IQueryable<T>, IQueryable<T>> transform)
+    public static IQueryable<T> IfInclude<T, TProperty>(
+    this IQueryable<T> source, 
+    bool condition, 
+    Func<IQueryable<T>, IIncludableQueryable<T, TProperty>> include)
+    where T : class
     {
-        return condition ? transform(source) : source;
+        return condition ? include(source) : source;
     }
 }

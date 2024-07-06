@@ -128,6 +128,21 @@ public partial class Testing
         await context.SaveChangesAsync();
     }
 
+    public static async Task AddListAsync<TEntity>(IEnumerable<TEntity> entities)
+    where TEntity : class
+    {
+        using var scope = _scopeFactory.CreateScope();
+
+        var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+        foreach (var entity in entities)
+        {
+            context.Add(entity);
+        }
+
+        await context.SaveChangesAsync();
+    }
+
     public static async Task<int> CountAsync<TEntity>() where TEntity : class
     {
         using var scope = _scopeFactory.CreateScope();

@@ -15,7 +15,7 @@ public class UserProfiles : EndpointGroupBase
             .MapPost(CreateUserProfile);
     }
 
-    public Task<List<UserProfileDto>> GetUserProfiles(ISender sender, bool includeRunningActivity)
+    public Task<List<UserProfileDto>> GetUserProfiles(ISender sender, bool includeRunningActivity = false)
     {
         return  sender.Send(new GetUserProfilesQuery(includeRunningActivity));
     }

@@ -18,7 +18,7 @@ public class UserProfileDto
 
     public double BMI { get; init; }
 
-    public List<RunningActivityDto>? RunningActivities { get; init; }
+    public List<RunningActivityDto> RunningActivities { get; init; } = new List<RunningActivityDto>();
 
     private class Mapping : Profile
     {

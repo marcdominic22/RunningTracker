@@ -7,7 +7,7 @@ namespace RunningTracker.Application.UserProfiles.Commands.CreateUserProfile;
 
 public record CreateUserProfileCommand : IRequest<UserProfileDto>
 {
-    public required string Name { get; init; }
+    public string? Name { get; init; }
 
     public double Weight { get; init; }
 

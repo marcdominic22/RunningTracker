@@ -4,7 +4,14 @@ using RunningTracker.Domain;
 
 namespace RunningTracker.Application.RunningActivities.Commands.CreateRunningActivity;
 
-public record CreateRunningActivityCommand(int UserProfileId, string Location, DateTime StartDateTime, DateTime EndDateTime, double Distance) : IRequest<int>;
+public record CreateRunningActivityCommand : IRequest<int>
+{
+    public int UserProfileId { get; init; }
+    public string? Location { get; init; }
+    public DateTime StartDateTime { get; init; }
+    public DateTime EndDateTime { get; set; }
+    public double Distance { get; set; }
+}
 
 public class CreateRunningActivityCommandHandler : IRequestHandler<CreateRunningActivityCommand, int>
 {

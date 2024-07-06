@@ -4,16 +4,17 @@ using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Respawn;
+using Npgsql;
 
 namespace RunningTracker.Application.FunctionalTests;
 
-public class SqlServerTestDatabase : ITestDatabase
+public class PostgreSqlTestDatabase : ITestDatabase
 {
     private readonly string _connectionString = null!;
-    private SqlConnection _connection = null!;
+    private NpgsqlConnection _connection = null!;
     private Respawner _respawner = null!;
 
-    public SqlServerTestDatabase()
+    public PostgreSqlTestDatabase()
     {
         var configuration = new ConfigurationBuilder()
             .AddJsonFile("appsettings.json")
@@ -29,10 +30,10 @@ public class SqlServerTestDatabase : ITestDatabase
 
     public async Task InitialiseAsync()
     {
-        _connection = new SqlConnection(_connectionString);
+        _connection = new NpgsqlConnection(_connectionString);
 
         var options = new DbContextOptionsBuilder<ApplicationDbContext>()
-            .UseSqlServer(_connectionString)
+            .UseNpgsql(_connectionString)
             .Options;
 
         var context = new ApplicationDbContext(options);
@@ -41,7 +42,7 @@ public class SqlServerTestDatabase : ITestDatabase
 
         _respawner = await Respawner.CreateAsync(_connectionString, new RespawnerOptions
         {
-            TablesToIgnore = new Respawn.Graph.Table[] { "__EFMigrationsHistory" }
+            TablesToIgnore = ["__EFMigrationsHistory"]
         });
     }
 

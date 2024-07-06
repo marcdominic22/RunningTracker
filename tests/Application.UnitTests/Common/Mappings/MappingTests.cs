@@ -2,11 +2,9 @@
 using System.Runtime.CompilerServices;
 using AutoMapper;
 using RunningTracker.Application.Common.Interfaces;
-using RunningTracker.Application.Common.Models;
-using RunningTracker.Application.TodoItems.Queries.GetTodoItemsWithPagination;
-using RunningTracker.Application.TodoLists.Queries.GetTodos;
-using RunningTracker.Domain.Entities;
 using NUnit.Framework;
+using RunningTracker.Application.Common.Dtos;
+using RunningTracker.Domain;
 
 namespace RunningTracker.Application.UnitTests.Common.Mappings;
 
@@ -30,11 +28,8 @@ public class MappingTests
     }
 
     [Test]
-    [TestCase(typeof(TodoList), typeof(TodoListDto))]
-    [TestCase(typeof(TodoItem), typeof(TodoItemDto))]
-    [TestCase(typeof(TodoList), typeof(LookupDto))]
-    [TestCase(typeof(TodoItem), typeof(LookupDto))]
-    [TestCase(typeof(TodoItem), typeof(TodoItemBriefDto))]
+    [TestCase(typeof(UserProfile), typeof(UserProfileDto))]
+    [TestCase(typeof(RunningActivity), typeof(RunningActivityDto))]
     public void ShouldSupportMappingFromSourceToDestination(Type source, Type destination)
     {
         var instance = GetInstanceOf(source);

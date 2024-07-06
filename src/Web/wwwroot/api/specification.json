@@ -35,7 +35,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/RunningActivities": {
@@ -68,7 +73,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/UserProfiles/GetUserProfileList": {
@@ -81,9 +91,9 @@
           {
             "name": "includeRunningActivity",
             "in": "query",
-            "required": true,
             "schema": {
-              "type": "boolean"
+              "type": "boolean",
+              "default": false
             },
             "x-position": 1
           }
@@ -102,7 +112,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/UserProfiles": {
@@ -134,7 +149,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/Users/register": {
@@ -620,7 +640,6 @@
           },
           "runningActivities": {
             "type": "array",
-            "nullable": true,
             "items": {
               "$ref": "#/components/schemas/RunningActivityDto"
             }
@@ -636,7 +655,8 @@
             "format": "int32"
           },
           "location": {
-            "type": "string"
+            "type": "string",
+            "nullable": true
           },
           "startDateTime": {
             "type": "string",
@@ -657,7 +677,8 @@
         "additionalProperties": false,
         "properties": {
           "name": {
-            "type": "string"
+            "type": "string",
+            "nullable": true
           },
           "weight": {
             "type": "number",

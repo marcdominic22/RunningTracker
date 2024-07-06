@@ -10,7 +10,7 @@ public class RunningActivities : EndpointGroupBase
     public override void Map(WebApplication app)
     {
         app.MapGroup(this)
-            // .RequireAuthorization()
+            .RequireAuthorization()
             .MapGet(GetUserRunningActivities,"GetUserRunningActivities")
             .MapPost(CreateRunningActivity);
     }

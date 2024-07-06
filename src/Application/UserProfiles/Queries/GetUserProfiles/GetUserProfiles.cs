@@ -20,11 +20,15 @@ public class GetUserProfilesQueryHandler : IRequestHandler<GetUserProfilesQuery,
 
     public async Task<List<UserProfileDto>> Handle(GetUserProfilesQuery request, CancellationToken cancellationToken)
     { 
-        return await _context.UserProfiles
-                .AsNoTracking()
-                .If(request.includeRunningActivity, userProfile => userProfile.Include(u => u.RunningActivities))
-                .ProjectTo<UserProfileDto>(_mapper.ConfigurationProvider)
-                .OrderBy(t => t.Id)
-                .ToListAsync(cancellationToken);
+        var userProfilesQuery = _context.UserProfiles.AsNoTracking();
+
+        userProfilesQuery = userProfilesQuery.IfInclude(request.includeRunningActivity, query => query.Include(up => up.RunningActivities));
+
+        var userProfileDtos = await userProfilesQuery
+            .ProjectTo<UserProfileDto>(_mapper.ConfigurationProvider)
+            .OrderBy(up => up.Id)
+            .ToListAsync(cancellationToken);
+
+        return userProfileDtos;
     }
 }

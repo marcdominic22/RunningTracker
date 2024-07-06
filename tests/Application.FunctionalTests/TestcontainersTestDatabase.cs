@@ -1,22 +1,22 @@
 ﻿using System.Data.Common;
 using RunningTracker.Infrastructure.Data;
-using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Respawn;
-using Testcontainers.MsSql;
+using Testcontainers.PostgreSql;
+using Npgsql;
 
 namespace RunningTracker.Application.FunctionalTests;
 
 public class TestcontainersTestDatabase : ITestDatabase
 {
-    private readonly MsSqlContainer _container;
+    private readonly PostgreSqlContainer _container;
     private DbConnection _connection = null!;
     private string _connectionString = null!;
     private Respawner _respawner = null!;
 
     public TestcontainersTestDatabase()
     {
-        _container = new MsSqlBuilder()
+        _container = new PostgreSqlBuilder()
             .WithAutoRemove(true)
             .Build();
     }
@@ -27,20 +27,31 @@ public class TestcontainersTestDatabase : ITestDatabase
 
         _connectionString = _container.GetConnectionString();
 
-        _connection = new SqlConnection(_connectionString);
+        _connection = new NpgsqlConnection(_connectionString);
 
         var options = new DbContextOptionsBuilder<ApplicationDbContext>()
-            .UseSqlServer(_connectionString)
+            .UseNpgsql(_connectionString)
             .Options;
 
         var context = new ApplicationDbContext(options);
 
         context.Database.Migrate();
 
-        _respawner = await Respawner.CreateAsync(_connectionString, new RespawnerOptions
-        {
-            TablesToIgnore = new Respawn.Graph.Table[] { "__EFMigrationsHistory" }
-        });
+        using (var conn = new NpgsqlConnection(_connectionString))
+		{
+			await conn.OpenAsync();
+
+            _respawner = await Respawner.CreateAsync(conn, new RespawnerOptions
+            {
+                SchemasToInclude = new[]
+                {
+                    "public"
+                },
+                TablesToIgnore = new Respawn.Graph.Table[] { "__EFMigrationsHistory" },
+                DbAdapter = DbAdapter.Postgres
+            });
+		}
+
     }
 
     public DbConnection GetConnection()
@@ -50,7 +61,12 @@ public class TestcontainersTestDatabase : ITestDatabase
 
     public async Task ResetAsync()
     {
-        await _respawner.ResetAsync(_connectionString);
+        using (var conn = new NpgsqlConnection(_container.GetConnectionString()))
+        {
+            await conn.OpenAsync();
+
+            await _respawner.ResetAsync(conn);
+        }
     }
 
     public async Task DisposeAsync()
